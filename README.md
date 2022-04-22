@@ -2,8 +2,11 @@
 Implement data structures in a programming language I know.
 
 ---
-####  queue
+####  Queue
     First In First Out. 先進先出
 
-####  stack
+####  Stack
     First In Last Out. 後進先出
+
+####  LinkList
+    單向串列，一個接著一個
