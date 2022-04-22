@@ -1,3 +1,4 @@
+//@ts-check
 // First In First Out
 class Queue {
   constructor() {

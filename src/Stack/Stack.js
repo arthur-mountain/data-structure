@@ -1,3 +1,4 @@
+//@ts-check
 // First In Last Out
 class Stack {
   constructor() {
