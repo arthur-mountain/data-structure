@@ -9,4 +9,5 @@ Implement data structures in a programming language I know.
     First In Last Out. 後進先出
 
 ####  LinkList
-    單向串列，一個接著一個
+    singly 單向串列，每個節點只會連接【下一個節點】
+    doubly 雙向串列，每個節點會連接【下一個節點】和【上一個節點】
