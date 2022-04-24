@@ -128,7 +128,7 @@ class LinkList {
     this.#length--;
   }
 
-  getLength() {
+  size() {
     return this.#length;
   }
 
