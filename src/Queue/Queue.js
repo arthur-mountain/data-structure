@@ -1,33 +1,46 @@
 //@ts-check
 // First In First Out
 class Queue {
+  #queue;
+  #length;
+
   constructor() {
-    this.queue = [];
-    this.length = this.queue.length;
+    this.#queue = [];
+    this.#length = 0;
   }
 
   enqueue(item) {
-    this.queue.push(item);
+    this.#queue.push(item);
+    this.#length++;
+    return this;
   }
 
   dequeue() {
-    if (this.queue.length === 0) {
-      return;
+    if (this.#length === 0) {
+      return null;
     }
-    this.queue.shift();
+
+    this.#length--;
+    this.#queue.shift();
   }
 
   size() {
-    return this.length;
+    return this.#length;
   }
 
   clear() {
-    this.queue = [];
+    this.#queue = [];
+    this.#length = 0;
+    return true;
   }
 
-  getQueue() {
-    return this.queue;
+  printAll() {
+    let queueIndex = 0;
+    while (queueIndex < this.#length) {
+      console.log("🚀 ~ file: Queue.js ~ line 38 ~ Queue ~ printAll ~ this.#queue[queueIndex]", this.#queue[queueIndex])
+      queueIndex++;
+    }
   }
 }
 
-export default Queue
+export default Queue;
