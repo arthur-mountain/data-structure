@@ -29,8 +29,7 @@ class Queue {
   }
 
   clear() {
-    this.#queue = [];
-    this.#length = 0;
+    this.#queue.length = this.#length = 0;
     return true;
   }
 
