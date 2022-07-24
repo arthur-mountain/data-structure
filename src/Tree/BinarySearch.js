@@ -1,0 +1,126 @@
+/**
+ * 搜尋與插入方法的時間複雜度為 O(log n)，
+ * 空間複雜度為 O(1)；
+ * 
+ * 而廣度優先及深度優先的時間/空間複雜度為 O(n)( 取決於實作的方式)。
+ */
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class BTree {
+  constructor() {
+    this.root = null;
+  }
+
+  // 插入
+  insert(value) {
+    const newNode = new Node(value);
+
+    if (!this.root) {
+      this.root = newNode;
+
+      return this;
+    }
+
+    let current = this.root;
+    while (true) {
+      if (current.value > value) { // 往左走
+        if (!current.left) {
+          current.left = newNode;
+          return this;
+        }
+
+        current = current.left;
+      } else if (current.value < value) { // 往右走
+        if (!current.right) {
+          current.right = newNode;
+          return this;
+        }
+
+        current = current.right;
+      } else { // 插入重複節點
+        console.log("插入重複節點");
+        return null;
+      }
+    }
+  }
+
+  // 搜尋
+  find(value) {
+    if (!this.root) return null;
+
+    let current = this.root;
+    let founded = 0;
+
+    while (current && !founded) {
+      if (current.value > value) {
+        // 要找的值比當前的值小，往左找
+        current = current.left;
+      } else if (current.value < value) {
+        // 要找的值比當前的值大，往右找
+        current = current.right;
+      } else {
+        // 要找得值剛好等於當前的值，founded
+        founded = 1;
+      }
+    }
+
+    // 沒找到
+    if (!founded) return null;
+
+    return current
+  }
+
+  // 廣度優先(同階層平行來回尋找)
+  BFS() {
+    let node = this.root;
+    let visited = []; // 已訪問過的節點
+    let unvisitedQueue = []; // 尚未訪問過的節點
+
+    unvisitedQueue.push(node); // 初始化，放入 root
+
+    while (unvisitedQueue.length) {
+      // 取出未訪問過的節點
+      node = unvisitedQueue.shift();
+
+      visited.push(node);
+
+      // 左邊有節點，則放入左邊節點(左邊先放)
+      if (node.left) unvisitedQueue.push(node.left);
+      // 右邊有節點，則放入右邊節點(再放右邊)
+      if (node.right) unvisitedQueue.push(node.right);
+    }
+
+    return visited;
+  }
+
+  // 深度優先(一路往單邊尋找後返回到root後再往一邊尋找)
+  // 三種類型，PreOrder、PostOrder，InOrder
+  DFSPreOrder() {
+    let visited = [];
+
+    function traverse(node) {
+      visited.push(node);
+
+      /*
+       * 遞迴 call stack
+       * 左邊遞迴到底之後，才繼續往右邊遞迴到底
+      */
+      // 左邊有節點，則遞迴尋找左邊節點，直到底
+      if (node.left) traverse(node.left);
+      // 右邊有節點，則遞迴尋找右邊節點，直到底
+      if (node.right) traverse(node.right);
+    }
+
+    traverse(this.root)
+
+    return visited;
+  }
+}
+
+export default BTree;
