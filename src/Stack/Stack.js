@@ -18,12 +18,12 @@ class Stack {
     return this.stack[this.length - 1];
   }
 
-  clear() {
-    this.stack = [];
-  }
-
   size() {
     return this.length;
+  }
+
+  clear() {
+    this.stack.length = this.length = 0;
   }
 }
 

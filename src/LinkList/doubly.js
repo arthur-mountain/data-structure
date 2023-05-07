@@ -18,9 +18,10 @@ class LinkList {
     this.#length = 0;
   }
 
-  searchFromHead(index) {
-    if (index < 0 || index >= this.#length) return null;
-
+  #createNode(value) {
+    return value instanceof ListNode ? value : new ListNode(value);
+  }
+  #searchFromHead(index) {
     let target = this.#head;
     let idx = 0;
     while (idx < index) {
@@ -29,9 +30,7 @@ class LinkList {
     }
     return target;
   }
-  searchFromTail(index) {
-    if (index < 0 || index >= this.#length) return null;
-
+  #searchFromTail(index) {
     let target = this.#tail;
     let idx = 0;
     while (idx < index) {
@@ -40,168 +39,96 @@ class LinkList {
     }
     return target;
   }
-  append(value) {
-    const node = new ListNode(value);
+
+  getNode(index) {
+    if (index < 0 || index > this.#length) {
+      return console.error("\n out of range \n");
+    }
+    if (index === 0) return this.#head;
+    if (index === this.#length) return this.#tail;
+    const isCloseFromHead = this.#length / 2 <= index;
+    return isCloseFromHead ? this.#searchFromHead(index) : this.#searchFromTail(index);
+  }
+  append(valueOrNode) {
+    const node = this.#createNode(valueOrNode);
 
     if (!this.#head) {
       this.#head = node;
       this.#tail = this.#head;
       this.#length++;
-      return;
+      return this;
     }
 
-    node.prev = this.#tail;
     this.#tail.next = node;
+    node.prev = this.#tail;
     this.#tail = node;
     this.#length++;
+    return this;
   }
-  prepend(value) {
-    const node = new ListNode(value);
+  prepend(valueOrNode) {
+    const node = this.#createNode(valueOrNode);
 
     if (!this.#head) {
       this.#head = node;
       this.#tail = this.#head;
       this.#length++;
-      return;
+      return this;
     }
 
     this.#head.prev = node;
     node.next = this.#head;
     this.#head = node;
     this.#length++;
+    return this;
   }
-
-  insertAfter(value, index, from = 'start') {
-    let targetNode;
-    if (from === 'start') {
-      targetNode = this.searchFromHead(index);
-    }
-    if (from === 'end') {
-      targetNode = this.searchFromTail(index);
-    }
-
-    if (!targetNode) return null;
-
-    const node = new ListNode(value);
-
-    if (index === this.#length - 1) {
-      this.#tail.next = node;
-      node.prev = this.#tail;
-      this.#length++;
-      return;
-    }
-
-    const next = targetNode.next;
-    targetNode.next = node;
-    next.prev = node;
-    node.next = next;
-    node.prev = targetNode;
+  insertTo(valueOrNode, index) {
+    if (index === this.#length) return this.append(valueOrNode);
+    const target = this.getNode(index);
+    if (!target) return;
+    const node = this.#createNode(valueOrNode);
+    node.next = target.next;
+    node.prev = target;
+    target.next = target.next.prev = node;
     this.#length++;
   }
-
-  insertBefore(value, index, from = 'start') {
-    let targetNode;
-    if (from === 'start') {
-      targetNode = this.searchFromHead(index);
-    }
-    if (from === 'end') {
-      targetNode = this.searchFromTail(index);
-    }
-
-    if (!targetNode) return null;
-
-    const node = new ListNode(value);
-
-    if (index === 0) {
-      node.next = this.#head;
-      this.#head.prev = node;
-      this.#head = node;
-      this.#length++;
-      return;
-    }
-
-    const prev = targetNode.prev;
-    prev.next = node;
-    node.prev = prev;
-    node.next = targetNode;
-    targetNode.prev = node;
-    this.#length++;
-  }
-  removeFromHead(index) {
+  remove(index) {
     if (index === 0) {
       this.#head = this.#head.next;
       this.#head.prev = null;
-      this.#length--;
       return;
     }
-
-    if (index === this.#length - 1) {
+    if (index === this.#length) {
       this.#tail = this.#tail.prev;
       this.#tail.next = null;
-      this.#length--;
       return;
     }
-
-    const targetNode = this.searchFromHead(index);
-    if (targetNode) {
-      const prev = targetNode.prev;
-      const next = targetNode.next;
-      prev.next = next;
-      next.prev = prev;
-      this.#length--;
-    }
+    const target = this.getNode(index);
+    if (!target) return;
+    target.prev.next = target.next;
+    target.next.prev = target.prev;
+    this.#length--;
   }
-  removeFromTail(index) {
-    if (index < 0 || index >= this.#length) return null;
-
-    if (index === 0) {
-      this.#tail = this.#tail.prev;
-      this.#tail.next = null;
-      this.#length--;
-      return;
-    }
-
-    if (index === this.#length - 1) {
-      this.#head = this.#head.next;
-      this.#head.prev = null;
-      this.#length--;
-      return;
-    }
-
-    const targetNode = this.searchFromTail(index);
-    if (targetNode) {
-      const prev = targetNode.prev;
-      const next = targetNode.next;
-      prev.next = next;
-      next.prev = prev;
-    }
-  }
-
-  updateFromHead(value, index) {
-    const targetNode = this.searchFromHead(index);
-
-    if (targetNode) targetNode.value = value;
-  }
-
-  updateFromTail(value, index) {
-    const targetNode = this.searchFromTail(index);
-
-    if (targetNode) targetNode.value = value;
-  }
-
+  update(value, index) {
+    const target = this.getNode(index);
+    if (!target) return;
+    target.value = value;
+  };
   size() {
     return this.#length;
   }
-
-  print() {
-    const tmp = [];
+  clear() {
+    this.#head = this.#tail = null;
+    this.#length = 0;
+  }
+  printAll() {
     let current = this.#head;
     while (current) {
-      tmp.push(current)
+      console.log('current node: ', current, '\n');
       current = current.next;
     }
-    console.log("\n🚀 ~ LinkList ~ print ~ \n", tmp)
   }
 }
+
+// const ILinkListDouble = new LinkList();
 
 export default LinkList;

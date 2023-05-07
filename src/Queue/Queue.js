@@ -30,7 +30,6 @@ class Queue {
 
   clear() {
     this.#queue.length = this.#length = 0;
-    return true;
   }
 
   printAll() {

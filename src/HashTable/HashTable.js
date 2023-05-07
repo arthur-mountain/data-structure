@@ -21,8 +21,23 @@ class HashTable {
     for (let i = 0; i < key.length; i++) {
       hash = (hash + key.charCodeAt(i) * i) % this.length;
     }
-
     return hash;
+  }
+  #getBucket(key) {
+    const idx = this.#hash(key); // 算出要資料保存的位址(idx)
+    const bucket = this.data[idx]; // 取出 bucket
+    return bucket;
+  }
+  #findIndex(key, bucket) {
+    // // 如果沒有 collision 則是 O(1)，否則會是 O(n)
+    const endIdx = bucket.length;
+    let currentIdx = -1;
+    while (currentIdx++ < endIdx) {
+      const [_key] = bucket[currentIdx];
+      if (_key === key) return currentIdx;
+    }
+    return -1;
+    // return bucket.findIndex(([_key])=> _key === key);
   }
 
   set(key, value) {
@@ -32,54 +47,60 @@ class HashTable {
     // 如果 bucket 不存在，初始化陣列並存入第一筆資料
     if (!bucket) {
       this.data[idx] = [[key, value]];
-      return;
+      return this;
     }
 
     this.data[idx].push([key, value]);
-
-    return this.data;
+    return this;
   }
-
   get(key) {
-    const idx = this.#hash(key); // 算出要資料保存的位址(idx)
-    const bucket = this.data[idx]; // 取出 bucket
-
-    // 如果沒有 collision 則是 O(1)，否則會是 O(n)
-    if (bucket) {
-      for (let i = 0; i < bucket.length; i++) {
-        const [_key, value] = bucket[i];
-        if (_key === key) {
-          return value;
-        }
-      }
-    }
-
-    return undefined;
+    const bucket = this.#getBucket(key);
+    if (!bucket) return;
+    const index = this.#findIndex(key, bucket);
+    if (index === -1) return;
+    return bucket[index][1]; // return value
   }
-
+  update(key, newValue) {
+    const bucket = this.#getBucket(key);
+    if (!bucket) return;
+    const index = this.#findIndex(key, bucket);
+    if (index === -1) return;
+    bucket[index][1] = newValue;
+    return bucket[index];
+  }
+  delete(key) {
+    const bucket = this.#getBucket(key);
+    if (!bucket) return;
+    const index = this.#findIndex(key, bucket);
+    if (index === -1) return;
+    bucket.splice(index, 1);
+  }
   // 取得所有 key，O(n)
   keys() {
-    let keys = [];
-    for (let i = 0; i < this.length; i++) {
-      const bucket = this.data[i];
-      if (bucket) {
-        for (let j = 0; j < bucket.length; j++) {
-          const [key] = bucket[j];
-          keys.push(key);
-        }
-      }
-    }
+    return this.data.flatMap(v => v ? v.map(v => v[0]) : []);
 
-    return keys;
+    // let keys = [];
+    // for (let i = 0; i < this.length; i++) {
+    //   const bucket = this.data[i];
+    //   if (bucket) {
+    //     for (let j = 0; j < bucket.length; j++) {
+    //       const [key] = bucket[j];
+    //       keys.push(key);
+    //     }
+    //   }
+    // }
+    // return keys;
+  }
+  // 取得所有 value，O(n)
+  values() {
+    return this.data.flatMap(v => v ? v.map(v => v[1]) : []);
+  }
+  // 取得所有 key, value，O(n)
+  entries() {
+    return this.data.flatMap(v => v ? v : []);
   }
 }
 
-const hashTable = new HashTable(2);
-hashTable.set('grapes', 10000);
-hashTable.set('apples', 54);
-hashTable.set('oranges', 2);
+// const IHashTable = new HashTable(3);
 
-const a = hashTable.get('apples');
-console.log("🚀 ~ file: HashTable.js ~ line 82 ~ a", a);
-const keys = hashTable.keys();
-console.log("🚀 ~ file: HashTable.js ~ line 84 ~ keys", keys);
+export default HashTable;

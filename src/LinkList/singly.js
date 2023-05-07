@@ -19,107 +19,88 @@ class LinkList {
     this.#length = 0;
   }
 
-  append(value) {
-    if (typeof value === 'undefined') return null;
+  #createNode(value) {
+    return value instanceof ListNode ? value : new ListNode(value);
+  }
 
-    const node = typeof value === 'object' ? value : new ListNode(value);
+  append(valueOrNode) {
+    const node = this.#createNode(valueOrNode);
+    this.#length++;
 
     if (!this.#head) {
       this.#head = node;
       this.#tail = this.#head;
-    } else {
-      this.#tail.next = node;
-      this.#tail = node;
+      return this;
     }
 
-    this.#length++;
+    this.#tail.next = node;
+    this.#tail = node;
+    return this;
   }
 
   getNode(index) {
+    if (index < 0 || index > this.#length) return null;
     if (index === 0) return this.#head;
-    if (index === this.#length - 1) return this.#tail;
+    if (index === this.#length) return this.#tail;
 
+    // recursive get
+    // const getNodeRecursive = (startIdx = 1, current = this.#head.next) => {
+    //   return startIdx === index ? current : getNodeRecursive(startIdx + 1, current.next);
+    // }
+
+    // return getNodeRecursive();
+
+    // while get
     let current = this.#head;
-    let idx = 0;
-
-    while (idx < index) {
+    let startIdx = 0;
+    while (startIdx++) {
       current = current.next;
-      idx++;
+      if (startIdx === index) return current;
     }
-
-    return current;
   }
 
-  insertTo(value, index, position = LinkList.behind) {
-    if (index < 0 || index >= this.#length) return null;
+  insertTo(valueOrNode, index) {
+    if (index < 0 || index > this.#length) return null;
 
-    const node = new ListNode(value);
-
+    const node = this.#createNode(valueOrNode);
     if (index === 0) {
-      if (position === LinkList.behind) {
-        const nextItem = this.#head.next;
-        this.#head.next = node;
-        node.next = nextItem;
-      } else {
-        const prevHead = this.#head;
-        this.#head = node;
-        this.#head.next = prevHead;
-      }
-
+      node.next = this.#head.next;
+      this.#head.next = node;
       this.#length++;
-      return;
+      return this;
     }
 
-    if (index === this.#length - 1) {
-      if (position === LinkList.behind) {
-        this.append(node);
-      } else {
-        const prevNode = this.getNode(index - 1);
-        prevNode.next = node;
-        node.next = this.#tail;
-      }
-
-      this.#length++;
-      return;
+    if (index === this.#length) {
+      return this.append(node);
     }
 
     const currentNode = this.getNode(index);
-
-    if (position === LinkList.behind) {
-      const nextNode = currentNode.next;
-      currentNode.next = node;
-      node.next = nextNode;
-    } else {
-      const prevNode = this.getNode(index - 1);
-      prevNode.next = node;
-      node.next = currentNode;
-    }
-
+    node.next = currentNode.next;
+    currentNode.next = node;
     this.#length++;
+    return this;
   }
 
   update(value, index) {
-    if (index < 0 || index >= this.#length) return null;
-
     const currentNode = this.getNode(index);
+    if (!currentNode) return currentNode;
     currentNode.value = value;
   }
 
   removeAt(index) {
-    if (index < 0 || index >= this.#length) return null;
+    if (index < 0 || index > this.#length) return null;
 
     if (index === 0) {
       this.#head = this.#head.next;
       this.#length--;
-      return;
+      return this;
     }
 
-    if (index === this.#length - 1) {
-      const prevNode = this.getNode(index - 1);
-      this.#tail = prevNode;
+    if (index === this.#length) {
+      this.#tail = this.getNode(this.#length - 1);
       this.#tail.next = null;
       this.#length--;
-      return;
+      return this;
     }
 
     const nextNode = this.getNode(index + 1);
@@ -129,6 +110,35 @@ class LinkList {
   }
 
   reverse() {
+    // only one node
+    if (!this.#head || !this.#head.next) return this.#head;
+
+    // recursive reverse 1
+    // const reverseRecursive = (current = this.#head, prev = null) => {
+    //   // 反轉到最後，最後一個必定為 null, 並把前一個node當作新的 head
+    //   if (!current) return (this.#head = prev);
+    //   reverseRecursive((() => {
+    //     const next = current.next;
+    //     current.next = prev;
+    //     return next;
+    //   })(), current);
+    // }
+    // reverseRecursive();
+
+    // recursive reverse 2
+    // 這個會直衝到最後一個元素，call frame 會疊到底 O(n)
+    // const getNewHeadRecursive = (head = this.#head) => {
+    //   if (!head.next) return head;
+    //   const newHead = getNewHeadRecursive(head.next);
+    //   // 直衝到最後一個，因此 head 會從最後一個的前一個開始，
+    //   // 將 head 後面一個的next往前轉到當前 head, 並將當前 head 的下一個清空
+    //   head.next.next = head;
+    //   head.next = null;
+    //   return newHead;
+    // }
+    // this.#head = getNewHeadRecursive();
+
+    // while reverse
     let prev = null;
     let current = this.#head;
     let next = null;
@@ -142,20 +152,31 @@ class LinkList {
 
     this.#head = this.#tail;
   }
-
   size() {
     return this.#length;
   }
+  clear() {
+    this.#head = this.#tail = null;
+    this.#length = 0;
+  }
 
   printAll() {
-    const tmp = [];
+    // recursive print
+    // const print = (head = this.#head) => {
+    //   if (!head) return;
+    //   console.log('current node: ', head, '\n');
+    //   return print(head.next);
+    // }
+    // print();
+
+    // while print
     let current = this.#head;
     while (current) {
-      tmp.push(current);
+      console.log('current node: ', current, '\n');
       current = current.next;
     }
-    return tmp;
   }
 }
+// const ILinkListSingly = new LinkList();
 
 export default LinkList;
