@@ -15,29 +15,36 @@ class PriorityQueue {
     this.#length = 0;
   }
 
+  #insertRecursive(newNode, currentIdx = 0) {
+    if (!this.#queue[currentIdx]) return false;
+    if (newNode.priority < this.#queue[currentIdx].priority) {
+      this.#queue.splice(currentIdx, 0, newNode);
+      this.#length++;
+      return true;
+    };
+    return this.#insertRecursive(newNode, currentIdx + 1);
+  }
+
   enqueue({ value, priority = Infinity }) {
-    if (priority < 0) return null;
+    if (priority < 0) {
+      console.warn("was not priority provide");
+      return this;
+    };
 
     const queue = this.#queue;
     const newNode = new PriorityNode(value, priority);
-
     if (!this.#length) {
       queue.push(newNode);
       this.#length++;
-      return;
+      return this;
     }
 
-    // 優先級數字越小，優先度越高
-    for (let i = 0; i <= this.#length - 1; i++) {
-      if (newNode.priority < queue[i].priority) {
-        queue.splice(i, 0, newNode);
-        this.#length++;
-        return
-      }
-    }
+    const wasInserted = this.#insertRecursive(newNode);
+    if (wasInserted) return this;
 
     queue.push(newNode);
     this.#length++;
+    return this;
   }
 
   dequeue() {
@@ -57,12 +64,14 @@ class PriorityQueue {
   }
 
   printAll() {
-    let queueIndex = 0;
-    while (queueIndex < this.#length) {
-      console.log("🚀 ~ file: Queue.js ~ line 38 ~ Queue ~ printAll ~ this.#queue[queueIndex]", this.#queue[queueIndex])
-      queueIndex++;
-    }
+    const print = (startIdx = 0) => {
+      if (!this.#queue[startIdx]) return;
+      console.log("🚀 ~ printAll at: ", startIdx);
+      console.log("🚀 ~ printAll item: ", this.#queue[startIdx], '\n');
+      return print(startIdx + 1);
+    };
+    return print();
   }
-}
+};
 
 export default PriorityQueue;

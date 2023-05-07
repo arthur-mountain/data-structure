@@ -21,7 +21,7 @@ class Queue {
     }
 
     this.#length--;
-    this.#queue.shift();
+    return this.#queue.shift();
   }
 
   size() {
@@ -34,11 +34,14 @@ class Queue {
   }
 
   printAll() {
-    let queueIndex = 0;
-    while (queueIndex < this.#length) {
-      console.log("🚀 ~ file: Queue.js ~ line 38 ~ Queue ~ printAll ~ this.#queue[queueIndex]", this.#queue[queueIndex])
-      queueIndex++;
+    const print = (startIdx = 0) => {
+      if (!this.#queue[startIdx]) return;
+      console.log("🚀 ~ printAll ~ at: ", startIdx);
+      console.log("🚀 ~ printAll ~ item: ", this.#queue[startIdx], '\n');
+      return print(startIdx + 1);
     }
+
+    return print();
   }
 }
 
