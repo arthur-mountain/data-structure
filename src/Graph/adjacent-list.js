@@ -60,8 +60,86 @@ class Graph {
 
   // printGraph()
 
-  // bfs(v)
-  // dfs(v)
+  /** @param {number} start */
+  bfs(start) {
+    const queue = [start];
+    const result = [];
+    const visited = {};
+    visited[start] = true;
+    let currentVertex;
+
+    while (queue.length) {
+      currentVertex = queue.shift();
+      result.push(currentVertex);
+
+      this.adjacencyList[currentVertex].forEach(
+        /** @param {number} neighbor */
+        (neighbor) => {
+          if (!visited[neighbor]) {
+            visited[neighbor] = true;
+            queue.push(neighbor);
+          }
+        },
+      );
+    }
+    return result;
+  }
+
+  /** @param {number} start */
+  dfs(start) {
+    const stack = [start];
+    const result = [];
+    const visited = {};
+    visited[start] = true;
+    let currentVertex;
+
+    while (stack.length) {
+      currentVertex = stack.pop();
+      result.push(currentVertex);
+
+      this.adjacencyList[currentVertex].forEach(
+        /** @param {number} neighbor */
+        (neighbor) => {
+          if (!visited[neighbor]) {
+            visited[neighbor] = true;
+            stack.push(neighbor);
+          }
+        },
+      );
+    }
+
+    return result;
+  }
+
+  /**
+   * @param {number} start
+   * @description
+   *   The recursive version of DFS,
+   *   but this as same as iterative version,
+   *   cause this using function stack of system.
+   * */
+  dfsRecursive(start) {
+    const result = [];
+    const visited = {};
+    const adjacencyList = this.adjacencyList;
+
+    (function dfsHelper(vertex) {
+      if (!vertex) return null;
+      visited[vertex] = true;
+      result.push(vertex);
+
+      adjacencyList[vertex].forEach(
+        /** @param {number} neighbor */
+        (neighbor) => {
+          if (!visited[neighbor]) {
+            return dfsHelper(neighbor);
+          }
+        },
+      );
+    })(start);
+
+    return result;
+  }
 }
 
 // const IGraph = new Graph(3);
