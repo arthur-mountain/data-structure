@@ -20,12 +20,25 @@ class Graph {
   }
 
   /**
-   * @param {number} source @param {number} destination **/
+   * @param {number} source
+   * @param {number} destination
+   */
   addEdge(source, destination) {
     if (!this.adjacencyList[source]) this.addVertex(source);
     if (!this.adjacencyList[destination]) this.addVertex(destination);
     this.adjacencyList[source].push(destination);
     this.adjacencyList[destination].push(source);
+  }
+
+  /**
+   * @param {number} vertex1
+   * @param {number} vertex2
+   * **/
+  hasEdge(vertex1, vertex2) {
+    return this.adjacencyList[vertex1].some(
+      /** @param {number} v*/
+      (v) => v === vertex2,
+    );
   }
 
   /**
