@@ -1,11 +1,20 @@
 //@ts-check
 /**
- * Insert：O(1)
- * Lookup: O(1)：若有 collision 發生，lookup 的時間複雜度就可能會變成 O(n)
- * Delete: O(1)
- * Search: O(1)：透過 hash function 直接找出該 key 對應的 value
- * Hash Table 常用在儲存使用者的 Email、使用者資料。
- * 缺點：除非在同一個 bucket 內，否則資料（Node）之間不會彼此參照。
+ * Adjacent list
+ *
+ * Insert Node: O(1)
+ * Insert Edge: O(1)
+ * Delete Node: O(V + E)：需要刪除所有與該節點相關聯的邊，V 是節點數量，E 是邊的數量。
+ * Delete Edge: O(1)
+ * Search Node: O(V)：需要遍歷所有節點。
+ * Search Edge: O(1)：若知道要查找的兩個節點，則能直接查找它們之間是否有邊存在。
+ *
+ * 缺點:
+ *  若是密集圖（dense graph），其空間複雜度較高；
+ *  若是稀疏圖（sparse graph），則可能會有許多不必要的空間浪費。
+ *
+ * 應用:
+ *  Graph 常用在社交網絡、路徑尋找演算法、網路路徑分析等應用。
  */
 
 // Adjacent list
