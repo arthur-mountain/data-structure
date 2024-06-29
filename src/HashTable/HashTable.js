@@ -10,12 +10,16 @@
 
 // A simple hash table
 class HashTable {
+  /** @param {number} size */
   constructor(size) {
     this.data = new Array(size);
     this.length = this.data.length;
   }
 
-  // hash func
+  /**
+   * @param {string} key
+   * @description hash func
+   **/
   #hash(key) {
     let hash = 0;
     for (let i = 0; i < key.length; i++) {
@@ -23,11 +27,22 @@ class HashTable {
     }
     return hash;
   }
+
+  /**
+   * @param {string} key
+   * @description get bucket by key
+   **/
   #getBucket(key) {
     const idx = this.#hash(key); // 算出要資料保存的位址(idx)
     const bucket = this.data[idx]; // 取出 bucket
     return bucket;
   }
+
+  /**
+   * @param {string} key
+   * @param {array} bucket
+   * @description find index
+   **/
   #findIndex(key, bucket) {
     // // 如果沒有 collision 則是 O(1)，否則會是 O(n)
     const endIdx = bucket.length;
@@ -40,6 +55,11 @@ class HashTable {
     // return bucket.findIndex(([_key])=> _key === key);
   }
 
+  /**
+   * @param {string} key
+   * @param {any} value
+   * @description set key, value
+   **/
   set(key, value) {
     const idx = this.#hash(key); // 算出要儲存的位址(idx)
     const bucket = this.data[idx]; // 取出要保存的 bucket
@@ -53,6 +73,11 @@ class HashTable {
     this.data[idx].push([key, value]);
     return this;
   }
+
+  /**
+   * @param {string} key
+   * @description get value by key
+   **/
   get(key) {
     const bucket = this.#getBucket(key);
     if (!bucket) return;
@@ -60,6 +85,12 @@ class HashTable {
     if (index === -1) return;
     return bucket[index][1]; // return value
   }
+
+  /**
+   * @param {string} key
+   * @param {any} newValue
+   * @description update value by key
+   **/
   update(key, newValue) {
     const bucket = this.#getBucket(key);
     if (!bucket) return;
@@ -68,6 +99,11 @@ class HashTable {
     bucket[index][1] = newValue;
     return bucket[index];
   }
+
+  /**
+   * @param {string} key
+   * @description delete key
+   **/
   delete(key) {
     const bucket = this.#getBucket(key);
     if (!bucket) return;
@@ -75,9 +111,15 @@ class HashTable {
     if (index === -1) return;
     bucket.splice(index, 1);
   }
+
+  /**
+   * @description get all keys
+   **/
   // 取得所有 key，O(n)
   keys() {
-    return this.data.flatMap(v => v ? v.map(v => v[0]) : []);
+    return this.data.flatMap((v) =>
+      v ? v.map(/** @param {array} v*/ (v) => v[0]) : [],
+    );
 
     // let keys = [];
     // for (let i = 0; i < this.length; i++) {
@@ -91,13 +133,23 @@ class HashTable {
     // }
     // return keys;
   }
+
+  /**
+   * @description get all values
+   **/
   // 取得所有 value，O(n)
   values() {
-    return this.data.flatMap(v => v ? v.map(v => v[1]) : []);
+    return this.data.flatMap((v) =>
+      v ? v.map(/** @param {array} v*/ (v) => v[1]) : [],
+    );
   }
+
+  /**
+   * @description get all [key,value][]
+   **/
   // 取得所有 key, value，O(n)
   entries() {
-    return this.data.flatMap(v => v ? v : []);
+    return this.data.flatMap((v) => (v ? v : []));
   }
 }
 
