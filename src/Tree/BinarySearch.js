@@ -1,7 +1,7 @@
 /**
  * 搜尋與插入方法的時間複雜度為 O(log n)，
  * 空間複雜度為 O(1)；
- * 
+ *
  * 而廣度優先及深度優先的時間/空間複雜度為 O(n)( 取決於實作的方式)。
  */
 class Node {
@@ -29,21 +29,24 @@ class BSTree {
 
     let current = this.root;
     while (true) {
-      if (current.value > value) { // 往左走
+      if (current.value > value) {
+        // 往左走
         if (!current.left) {
           current.left = newNode;
           return this;
         }
 
         current = current.left;
-      } else if (current.value < value) { // 往右走
+      } else if (current.value < value) {
+        // 往右走
         if (!current.right) {
           current.right = newNode;
           return this;
         }
 
         current = current.right;
-      } else { // 插入重複節點(current.value === value)
+      } else {
+        // 插入重複節點(current.value === value)
         console.log("插入重複節點");
         return null;
       }
@@ -73,7 +76,7 @@ class BSTree {
     // 沒找到
     if (!founded) return null;
 
-    return current
+    return current;
   }
 
   // 廣度優先(同階層平行來回尋找)
@@ -112,7 +115,7 @@ class BSTree {
       /*
        * 左邊遞迴到底 並放入節點，
        * 才繼續右邊遞迴到底 並放入節點
-      */
+       */
       visited.push(node);
       // 左邊有節點，則遞迴尋找左邊節點，直到底
       if (node.left) traverse(node.left);
@@ -120,7 +123,7 @@ class BSTree {
       if (node.right) traverse(node.right);
     }
 
-    traverse(this.root)
+    traverse(this.root);
 
     return visited;
   }
@@ -135,13 +138,13 @@ class BSTree {
        * 左邊遞迴到底後，
        * 才開始把節點放入 queue，
        * call stack 往返時如果有右邊節點，則遞迴右邊節點
-      */
+       */
       if (node.left) traverse(node.left);
       visited.push(node);
       if (node.right) traverse(node.right);
     }
 
-    traverse(this.root)
+    traverse(this.root);
 
     return visited;
   }
@@ -157,7 +160,7 @@ class BSTree {
       visited.push(node);
     }
 
-    traverse(this.root)
+    traverse(this.root);
 
     return visited;
   }
